@@ -1,27 +1,26 @@
 import replicate
-output = replicate.run(
- "jagilley/controlnet-depth2img:922c7bb67b87ec32cbc2fd11b1d5f94f0ba4f5519c4dbd02856376444127cc60",
-input={"strength":0.9,"a_prompt":"Best quality, extremely detailed","structure":"lineart","image": open("/Users/rachpradhan/Desktop/condensation/00012.png", "rb"),"prompt":"impasto painting, in the style of Chaim Soutine, minimal"}
-)
-print(output)
-
-# Download the link from output[1] and save it to the computer
-link = output[1]
-# Code to download the link and save it to the computer goes here
+import os
 import urllib.request
 
-image_path = "/Users/rachpradhan/Desktop/condensation/2.png"
-urllib.request.urlretrieve(link, image_path)
+input_folder = "/Users/rachpradhan/Desktop/condensation/input_images"
+output_folder = "/Users/rachpradhan/Desktop/condensation/output_links"
 
-# import os
-# import replicate
+input_images = []
+for filename in os.listdir(input_folder):
+    if filename.endswith(".png"):
+        input_images.append(open(os.path.join(input_folder, filename), "rb"))
 
-# folder_path = "/Users/rachpradhan/Desktop/condensation/script.py"
-# for filename in os.listdir(folder_path):
-#     if filename.endswith(".jpg") or filename.endswith(".png"):
-#         image_path = os.path.join(folder_path, filename)
-#         output = replicate.run(
-#             "jagilley/controlnet-depth2img:922c7bb67b87ec32cbc2fd11b1d5f94f0ba4f5519c4dbd02856376444127cc60",
-#             input={"image": open(image_path, "rb"), "prompt":"turn this into an anime animation"}
-#         )
-#         print(output)
+output_links = []
+for image in input_images:
+    output = replicate.run(
+        "jagilley/controlnet-depth2img:922c7bb67b87ec32cbc2fd11b1d5f94f0ba4f5519c4dbd02856376444127cc60",
+        input={"strength":0.9,"a_prompt":"Best quality, extremely detailed","structure":"lineart","image": image,"prompt":"impasto painting, in the style of Chaim Soutine, minimal"}
+    )
+    output_links.append(output[1])
+
+for index, link in enumerate(output_links): 
+    # Generate a new filename based on the index
+    new_filename = f"output_image_{index}.png"
+    urllib.request.urlretrieve(link, os.path.join(output_folder, new_filename))
+
+print("All images processed and links saved successfully.")
