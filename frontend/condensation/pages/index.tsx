@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
 import Layout from '../app/layout';
@@ -6,7 +6,6 @@ import Layout from '../app/layout';
 const Home: React.FC = () => {
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [style, setStyle] = useState<string>('');
-  const [backgroundImage, setBackgroundImage] = useState<string | null>();
   const BACKGROUND_URL = "../public/background.jpg";
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -14,8 +13,9 @@ const Home: React.FC = () => {
   }, []);
   
   const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
-  });
+    accept: {
+      'video/mp4': ['.mp4'],
+    }  });
 
   const handleStyleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setStyle(e.target.value);
